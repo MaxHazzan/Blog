@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Blog site of Maher Hassan that connects to his anilist account and logs the blogs/status">
+  <meta name="description" content="Blog site of Maher Hassan that connects to his AniList account and logs the blogs/status">
   <meta property="og:image" content="https://raw.githubusercontent.com/MaxHazzan/Blog/main/assets/banner.jpg">
   <meta name="twitter:image" content="https://raw.githubusercontent.com/MaxHazzan/Blog/main/assets/banner.jpg">
   <meta name="keywords" content="Maher Blogs">
@@ -13,53 +13,70 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --card-bg: #ffffff;
+      --primary-color: #007BFF;
+      --secondary-color: #f4f6f9;
+      --transition-duration: 0.4s;
+      --hover-bg: #007bff30;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #ddd;
+      --card-bg: #333;
+      --primary-color: #4f8cff;
+      --secondary-color: #242424;
+      --hover-bg: #4f8cff30;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
-      background-color: #f0f2f5;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
-      padding: 20px;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      animation: fadeIn 1s ease-in-out;
+      transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
+      overflow-x: hidden;
+      padding: 20px;
     }
 
     .container {
-      width: 90%;
-      max-width: 800px;
+      width: 100%;
+      max-width: 900px;
       margin: 20px auto;
       padding: 20px;
-      background-color: #ffffff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      transition: transform 0.3s ease-in-out;
-      animation: slideIn 0.5s ease-out;
-      display: none;
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      animation: fadeIn var(--transition-duration) ease-in-out;
+      transition: background-color var(--transition-duration) ease, transform var(--transition-duration) ease;
     }
 
     h1 {
-      font-family: 'Montserrat', sans-serif;
-      color: #333333;
-      margin-bottom: 20px;
       text-align: center;
+      margin-bottom: 20px;
+      transition: color var(--transition-duration) ease;
     }
 
     .log-entry {
-      border-bottom: 1px solid #ddd;
-      padding: 15px 0;
-      display: flex;
-      align-items: center;
-      transition: background-color 0.3s ease-in-out;
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-    }
-
-    .log-entry:last-child {
-      border-bottom: none;
+      background-color: var(--secondary-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: transform var(--transition-duration) ease, background-color var(--transition-duration) ease;
+      animation: slideIn var(--transition-duration) ease-out;
+      overflow: hidden;
     }
 
     .log-entry:hover {
-      background-color: #f0f8ff;
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
 
     .profile-img {
@@ -68,58 +85,137 @@
       border-radius: 50%;
       object-fit: cover;
       margin-right: 15px;
-      flex-shrink: 0;
+      float: left;
+      transition: transform var(--transition-duration) ease;
+    }
+
+    .profile-img:hover {
+      transform: scale(1.1);
     }
 
     .log-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      overflow: hidden;
     }
 
     .log-content p {
-      margin: 0;
-      color: #555555;
-      overflow-wrap: break-word;
+      margin: 5px 0;
       word-wrap: break-word;
     }
 
+    #sourceLinks {
+      text-align: right;
+      text-decoration: underline;
+      float: right;
+      display: inline-block;
+    }
+
     .log-content a {
-      color: #007BFF;
+      color: var(--primary-color);
       text-decoration: none;
-      overflow-wrap: break-word;
-      word-wrap: break-word;
+      transition: color var(--transition-duration) ease;
     }
 
     .log-content a:hover {
       text-decoration: underline;
+      color: lighten(var(--primary-color), 10%);
     }
 
-    .log-content img {
-      max-width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      display: block;
-      margin-top: 10px;
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeIn var(--transition-duration) ease forwards;
+    }
+
+    .pagination button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 5px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background var(--transition-duration) ease, transform var(--transition-duration) ease;
+    }
+
+    .pagination button:hover {
+      background: var(--hover-bg);
+      transform: scale(1.05);
+    }
+
+    .pagination button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .dark-mode-toggle {
+      position: fixed;
+      display: none;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background var(--transition-duration) ease, transform var(--transition-duration) ease;
+      z-index: 100;
+    }
+
+    .dark-mode-toggle:hover {
+      background: var(--hover-bg);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .log-entry {
+        padding: 8px;
+      }
+
+      .dark-mode-toggle {
+        opacity: 0.5;
+        font-size: 12px;
+        padding: 8px 12px;
+      }
     }
 
     @keyframes fadeIn {
-      from {
+      0% {
         opacity: 0;
       }
 
-      to {
+      100% {
         opacity: 1;
       }
     }
 
     @keyframes slideIn {
-      from {
+      0% {
         transform: translateY(20px);
         opacity: 0;
       }
 
-      to {
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      100% {
         transform: translateY(0);
         opacity: 1;
       }
@@ -127,64 +223,74 @@
 
     .loading-screen {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       width: 100vw;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       background-color: #f0f2f5;
-      z-index: 10;
+      color: #333;
+      z-index: 1000;
+    }
+
+    .load {
+      margin: 2px;
+      padding: 5px;
+    }
+    
+    #title {
+      padding: 1px;
     }
   </style>
 </head>
 
 <body>
   <div class="loading-screen" id="loadingScreen">
-    <h2>Loading</h2>
+    <h1 class="load">Processing</h1>
+    <h3 class="load">Please Wait</h3>
   </div>
-
-  <div class="container" id="logContainer">
-    <h1>Blogs</h1>
+  <button class="dark-mode-toggle" id="darkModeToggle">Toggle Theme</button>
+  <div class="container" id="logContainer" style="display: none;">
+    <h1 id="title">Web Blogs</h1>
     <div id="logsContainer"></div>
+    <div class="pagination" id="pagination"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
+    marked.setOptions({ sanitize: true });
+
     const query = `
-      query ($userId: Int, $page: Int) {
-        Page(page: $page, perPage: 50) {
-          pageInfo {
-            hasNextPage
-            currentPage
-          }
-          activities(userId: $userId, type: TEXT) {
-            ... on TextActivity {
-              text
-              createdAt
-              siteUrl
-            }
+    query ($userId: Int, $page: Int) {
+      Page(page: $page, perPage: 10) {
+        pageInfo {
+          hasNextPage
+          currentPage
+        }
+        activities(userId: $userId, type: TEXT) {
+          ... on TextActivity {
+            text
+            createdAt
+            siteUrl
           }
         }
-      }`;
+      }
+    }`;
 
+    const userId = 6482498;
+    // Anilist User ID
     let currentPage = 1;
     let hasNextPage = true;
 
     const fetchLogs = async (userId, page) => {
       const response = await fetch('https://graphql.anilist.co', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          variables: { userId, page },
-        }),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ query, variables: { userId, page } }),
       });
-
       const { data } = await response.json();
       return data.Page;
     };
@@ -193,36 +299,64 @@
       const logsContainer = document.getElementById('logsContainer');
       logsContainer.innerHTML = '';
 
-      logEntries.forEach(entry => {
-        let processedText = entry.text.split(' ').map(word => word.length > 35 ? '...' : word).join(' ');
-        processedText = marked.parse(processedText.replace(/img\d+\((.*?)\)/g, ''));
+      logEntries.forEach((entry) => {
+        const date = new Date(entry.createdAt * 1000);
+        const timeString = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
         const logElement = document.createElement('div');
         logElement.classList.add('log-entry');
-        const date = new Date(entry.createdAt * 1000);
-        const options = {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-          timeZone: 'Asia/Dhaka'
-        };
-        const timeString = date.toLocaleTimeString('en-US', options)
-        const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
         logElement.innerHTML = `
-      <img src="assets/profile.jpg" alt="Profile" class="profile-img">
-      <div class="log-content">
-        <p>${timeString} : ${dateString} ↓
-        <br>${processedText}</p>
-      </div>`;
+        <img src="assets/profile.jpg" alt="Profile" class="profile-img">
+        <div class="log-content">
+          <p><strong>${timeString}, ${dateString}</strong><a id="sourceLinks" href="${entry.siteUrl}">Source</a><p>${marked.parse(entry.text)}</p>
+        </div>
+      `;
         logsContainer.appendChild(logElement);
       });
 
+      logsContainer.style.animation = "slideUp 0.3s ease-in-out";
+
+      document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+
+    const updatePagination = () => {
+      const paginationContainer = document.getElementById('pagination');
+      paginationContainer.innerHTML = `
+      <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(-1)">Prev</button>
+      <button ${!hasNextPage ? 'disabled' : ''} onclick="changePage(1)">Next</button>
+    `;
+    };
+
+    const changePage = async (direction) => {
+      currentPage += direction;
+      const data = await fetchLogs(userId, currentPage);
+      if (data) {
+        displayLogs(data.activities);
+        hasNextPage = data.pageInfo.hasNextPage;
+        updatePagination();
+      }
+    };
+
     document.addEventListener('DOMContentLoaded', async () => {
-      const { activities, pageInfo } = await fetchLogs(6482498, currentPage);
-      displayLogs(activities.reverse());
+      const data = await fetchLogs(userId, currentPage);
       document.getElementById('loadingScreen').style.display = 'none';
       document.getElementById('logContainer').style.display = 'block';
+      document.getElementById('darkModeToggle').style.display = 'block';
+      if (data) {
+        displayLogs(data.activities);
+        hasNextPage = data.pageInfo.hasNextPage;
+        updatePagination();
+      }
     });
+
+    const toggleDarkMode = () => {
+      const currentTheme = document.body.dataset.theme;
+      document.body.dataset.theme = currentTheme === 'dark' ? 'light' : 'dark';
+    };
+
+    document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
   </script>
 </body>
+
 </html>
